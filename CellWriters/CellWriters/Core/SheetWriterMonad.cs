@@ -15,17 +15,23 @@ namespace CellWriter.EPPlusHelpers.Excell
             Writer = other.Writer;
             Modifiers = other.Modifiers.ToList();
         }
+
         public SheetWriterMonad(ISheetWriter writer)
         {
             Writer = writer;
             Modifiers = new List<Action<ExcelRange>>();
         }
 
+        /// <summary>
+        /// Adds a modifier with the highest priority. 
+        /// </summary>
+        /// <param name="modifier"></param>
+        /// <returns></returns>
         public SheetWriterMonad With(Action<ExcelRange> modifier)
         {
             return new SheetWriterMonad(this).Add(modifier);
         }
-
+        
         public void Write(Action<ISheetWriter> writeAction)
         {
             Writer.With(Modifiers, writeAction);
