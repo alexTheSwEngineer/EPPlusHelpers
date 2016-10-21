@@ -1,4 +1,5 @@
 ﻿using CellWriter.EPPlusHelpers.Excell;
+using CellWriters.Core;
 using CellWriters.Exstensions;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -15,15 +16,18 @@ namespace Examples
         {
             using (var pckg = new ExcelPackage(new FileInfo("D:\\ExampleFile.xlsx")))
             {
-                var redBackground = SettingsExstensions.BgColor(Color.Red);
-                var bigFont = SettingsExstensions.FontSize(37);
                 var sheetWriter = new SheetWriter(pckg.Workbook.Worksheets.Add("Examples"));
+
+                ISettings redBackground = SettingsExstensions.BgColor(Color.Red);
+                ISettings bigFont = SettingsExstensions.FontSize(37);
+                ISettings mediumBorder = new Settings(cell => cell.Style.Border.BorderAround(ExcelBorderStyle.Medium));
+                
 
                 sheetWriter.SetUp()
                            .With(redBackground);
                            
                 sheetWriter.WriteLine("with","red", "background")
-                           .WithTempSettings(bigFont, x =>
+                           .WithOverrideSettings(bigFont, x =>
                            {
                                x.WriteLine("with", "big", "font");
                            })

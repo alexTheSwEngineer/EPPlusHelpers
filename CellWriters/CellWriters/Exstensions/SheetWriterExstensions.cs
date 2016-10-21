@@ -7,16 +7,16 @@ namespace CellWriter.EPPlusHelpers.Excell
 {
     public static class SheetWriterExstensions
     {
-        public static void WithColor(this ISheetWriter writer, Color color, Action<ISheetWriter> writeAction)
+        public static ISheetWriter WithColor(this ISheetWriter writer, Color color, Action<ISheetWriter> writeAction)
         {
             var settings = SettingsExstensions.BgColor(color);
-            writer.WithTempSettings(settings,writeAction);
+            return writer.WithAddedSettings(settings,writeAction);
         }
 
-        public static void WithSize(this ISheetWriter writer, float size, Action<ISheetWriter> writeAction)
+        public static ISheetWriter WithSize(this ISheetWriter writer, float size, Action<ISheetWriter> writeAction)
         {
             var settings = SettingsExstensions.FontSize(size);
-            writer.WithTempSettings(settings, writeAction);
+            return writer.WithAddedSettings(settings, writeAction);
         }
     }
 }

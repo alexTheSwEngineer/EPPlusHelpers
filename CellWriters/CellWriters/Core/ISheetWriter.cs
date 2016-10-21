@@ -27,7 +27,7 @@ namespace CellWriter.EPPlusHelpers.Excell
         /// </summary>
         /// <param name="cellModifier"></param>
         /// <param name="action"></param>
-        ISheetWriter WithTempSettings(ISettings settings, Action<ISheetWriter> action);
+        ISheetWriter WithOverrideSettings(ISettings settings, Action<ISheetWriter> action);
 
         /// <summary>
         /// Applies the <param name="settings"/> together with the existing settings to all write/writeLine calls within the <paramref name="action"/>.

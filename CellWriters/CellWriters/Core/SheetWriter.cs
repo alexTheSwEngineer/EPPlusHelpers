@@ -78,7 +78,7 @@ namespace CellWriter.EPPlusHelpers.Excell
         /// </summary>
         /// <param name="tempSettings"></param>
         /// <param name="action"></param>
-        public ISheetWriter WithTempSettings(ISettings tempSettings, Action<ISheetWriter> action)
+        public ISheetWriter WithOverrideSettings(ISettings tempSettings, Action<ISheetWriter> action)
         {
             var preservedSetting = Settings;
             Settings = tempSettings;
