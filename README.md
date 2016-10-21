@@ -8,23 +8,24 @@ using (var pckg = new ExcelPackage(new FileInfo("D:\\ExampleFile.xlsx")))
 {
 	var sheetWriter = new SheetWriter(pckg.Workbook.Worksheets.Add("Examples"));
 	sheetWriter.SetUp()
-			   .With(redBackground);
+			   .With(redFont);
 			   .With(bigFont);
 			   
-	sheetWriter.WriteLine("with","red", "background")
+	sheetWriter.WriteLine("with","big","red", "font")
 			   .WithOverrideSettings(tempSetting1, x =>
 			   {
-				   x.WriteLine("with", "big", "font");
+				   x.WriteLine("some", "temp", "style","settings");
 			   })
 			   .WithAddedSettings(tempSetting2, x =>
 			   {
-				   x.WriteLine("red", "big", "font");
+				   x.WriteLine("some", "temp settings", "and","big","red","font");
 			   })
 			   .WithColor(Color.Blue,x=>
 			   {
-				  x.Write("cell1")
-				  x.Write()//empty cell
-				  x.WriteLine() //go to next row
+				  x.Write("cell1");
+				  x.Write();//empty cell
+				  x.Write("cell3");
+				  x.WriteLine(); //go to next row
 			   });
     pckg.Save();
 }
