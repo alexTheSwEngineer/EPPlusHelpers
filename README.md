@@ -111,7 +111,7 @@ The other properties have to do with what happens with empty cells:
 	     .WriteLine("none","none","none");
 	 
 //	   |  A  |  B  |  C  |
-//    |1||none |none |none |         
+//  |1||none |none |none |         
 //	|2||red  |red  |     |      
 //	|3||red  |     |     |
 //	|4||     |red  |     |
@@ -129,10 +129,6 @@ The other properties have to do with what happens with empty cells:
 //If only ApplyModifiersToEmptyCells was set to true:
 //   the only empty cell that has a red background would be A4.
 ```
-
-#SheetWriter Write/WriteLine examples:
-
-
 
 #Using write()/writeLine():
 
