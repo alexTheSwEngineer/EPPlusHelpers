@@ -1,9 +1,6 @@
-﻿using CellWriters.Core;
-using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
-namespace CellWriter.EPPlusHelpers.Excell
+namespace CellWriters.Core
 {
     public interface ISheetWriter
     {
@@ -22,7 +19,7 @@ namespace CellWriter.EPPlusHelpers.Excell
         ISheetWriter WriteLine(params object[] values);
 
         /// <summary>
-        /// Applies onlly this settings to all write/writeLine calls within the action.
+        /// Applies only this settings to all write/writeLine calls within the action.
         /// This settings override the default settings for this SheetWriter, for this WithTempSettings call.
         /// </summary>
         /// <param name="cellModifier"></param>

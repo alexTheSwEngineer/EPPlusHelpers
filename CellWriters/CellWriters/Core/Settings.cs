@@ -1,11 +1,10 @@
-﻿using CellWriters.Core;
-using CellWriters.Exstensions;
+﻿using CellWriters.Exstensions;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CellWriter.EPPlusHelpers.Excell
+namespace CellWriters.Core
 {
     public class Settings : ISettings
     {

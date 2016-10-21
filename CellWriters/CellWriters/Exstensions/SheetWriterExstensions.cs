@@ -1,9 +1,10 @@
-﻿using CellWriters.Exstensions;
+﻿using CellWriters.Core;
+using CellWriters.Exstensions;
 using OfficeOpenXml;
 using System;
 using System.Drawing;
 
-namespace CellWriter.EPPlusHelpers.Excell
+namespace CellWriters.Exstensions
 {
     public static class SheetWriterExstensions
     {

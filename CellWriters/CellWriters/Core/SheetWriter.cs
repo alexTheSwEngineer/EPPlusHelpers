@@ -1,29 +1,27 @@
-﻿using CellWriters;
-using CellWriters.Core;
+﻿using CellWriters.Exstensions;
 using OfficeOpenXml;
 using System;
-using System.Collections.Generic;
 
-namespace CellWriter.EPPlusHelpers.Excell
+namespace CellWriters.Core
 {
     public class SheetWriter : ISheetWriter
     {
         /// <summary>
         /// This must be set to true if multiple sheet writers instances would be instantiated for the same <see cref="ExcelWorksheet"/>.
         /// If only one instance of a <see cref="SheetWriter"/> exist per <see cref="ExcelWorksheet"/> then you should set <see cref="AllowMultipleWriterHanldes"/>
-        /// to false for performance reasons. It will work corectly either way in the case of a single <see cref="SheetWriter"/> .
+        /// to false for performance reasons. It will work correctly either way in the case of a single <see cref="SheetWriter"/> .
         /// </summary>
         public bool AllowMultipleWriterHanldes { get; private set; }
 
         /// <summary>
-        /// Indicates whether parametarless calls to <see cref="Write(object[])"/> and <see cref="WriteLine(object[])"/>
+        /// Indicates whether parameterless calls to <see cref="Write(object[])"/> and <see cref="WriteLine(object[])"/>
         /// will apply modifiers to the cells, or just move the pointer to the next cell/row.
         /// </summary>
         public bool ApplyModifiersToEmptyCells { get; private set; }
 
         /// <summary>
-        /// Indicates whether parametarless calls to <see cref="WriteLine(object[])"/>
-        /// will insert pading if the current row does not spann to the maximum number of cells used in the previous rows.
+        /// Indicates whether parameterless calls to <see cref="WriteLine(object[])"/>
+        /// will insert padding if the current row does not span to the maximum number of cells used in the previous rows.
         /// Padding cells will be modified according to <see cref="ApplyModifiersToEmptyCells"/>
         /// </summary>
         public bool ShouldPadRows { get; private set; }
@@ -41,7 +39,7 @@ namespace CellWriter.EPPlusHelpers.Excell
         public ISettings Settings
         {
             get { return _settings; }
-            internal set { _settings = value ?? Excell.Settings.Empty; }
+            internal set { _settings = value ?? Core.Settings.Empty; }
         }
 
         private ExcelWorksheet Sheet { get; set; }
@@ -55,8 +53,8 @@ namespace CellWriter.EPPlusHelpers.Excell
             ApplyModifiersToEmptyCells = formatEmpyCells;
             ShouldPadRows = padRows;
             Sheet = sheet;
-            Settings = Excell.Settings.Empty;
-            _currentSettings = Excell.Settings.Empty;
+            Settings = Core.Settings.Empty;
+            _currentSettings = Core.Settings.Empty;
 
             UpdatePointers();
         }
@@ -74,7 +72,7 @@ namespace CellWriter.EPPlusHelpers.Excell
 
         /// <summary>
         /// Executes <paramref name="action"/> and applies only <paramref name="tempSettings"/> to all <see cref="Write(object[])"/>/<see cref="WriteLine(object[])"/> calls in <paramref name="action"/>.
-        /// This settings overide any existing settings of this SheetWriter.
+        /// This settings override any existing settings of this SheetWriter.
         /// </summary>
         /// <param name="tempSettings"></param>
         /// <param name="action"></param>
@@ -104,7 +102,7 @@ namespace CellWriter.EPPlusHelpers.Excell
 
         /// <summary>
         /// Writes each of the objects in a separate cell in the same row. 
-        /// If called with no parametars, it will write a null value to the cell and move the pointer to the next one. 
+        /// If called with no parameters, it will write a null value to the cell and move the pointer to the next one. 
         /// Settings will be applied to such (empty) cells if <see cref="ApplyModifiersToEmptyCells"/> is set to true.
         /// </summary>
         /// <param name="values"></param>

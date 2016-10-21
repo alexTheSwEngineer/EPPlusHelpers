@@ -49,7 +49,7 @@
     <Compile Include="Core\ISheetWriter.cs" />
     <Compile Include="Core\SheetWriterSetup.cs" />
     <Compile Include="Exstensions\EnumerableExstensions.cs" />
-    <Compile Include="Exstensions\Modifiers.cs" />
+    <Compile Include="Exstensions\SettingsExstensions.cs" />
     <Compile Include="Exstensions\ObjectArrayExstensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\SheetWriter.cs" />
