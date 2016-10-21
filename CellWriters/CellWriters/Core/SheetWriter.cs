@@ -1,4 +1,5 @@
 ﻿using CellWriters;
+using CellWriters.Core;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,6 @@ namespace CellWriter.EPPlusHelpers.Excell
 {
     public class SheetWriter : ISheetWriter
     {
-        private static object NullObject = null;
-
-
         /// <summary>
         /// This must be set to true if multiple sheet writers instances would be instantiated for the same <see cref="ExcelWorksheet"/>.
         /// If only one instance of a <see cref="SheetWriter"/> exist per <see cref="ExcelWorksheet"/> then you should set <see cref="AllowMultipleWriterHanldes"/>
@@ -40,15 +38,16 @@ namespace CellWriter.EPPlusHelpers.Excell
         /// </summary>
         public int Row { get; private set; }
 
-        
-        private ExcelWorksheet Sheet { get; set; }
-        private ExcelRange Cells {
-            get
-            {
-                return Sheet.Cells;
-            }
+        public ISettings Settings
+        {
+            get { return _settings; }
+            internal set { _settings = value ?? Excell.Settings.Empty; }
         }
-        private IEnumerable<Action<ExcelRange>> CurrentModifiers { get; set; }
+
+        private ExcelWorksheet Sheet { get; set; }
+        private ISettings _settings;
+        private ISettings _currentSettings;
+        private ExcelRange Cells {get { return Sheet.Cells;}}
 
         public SheetWriter(ExcelWorksheet sheet,bool multiHandle = false,bool padRows=false, bool formatEmpyCells=false)
         {
@@ -56,7 +55,8 @@ namespace CellWriter.EPPlusHelpers.Excell
             ApplyModifiersToEmptyCells = formatEmpyCells;
             ShouldPadRows = padRows;
             Sheet = sheet;
-            CurrentModifiers = new List<Action<ExcelRange>>();
+            Settings = Excell.Settings.Empty;
+            _currentSettings = Excell.Settings.Empty;
 
             UpdatePointers();
         }
@@ -64,35 +64,51 @@ namespace CellWriter.EPPlusHelpers.Excell
         #region ISheetWriterApi
 
         /// <summary>
-        /// Creates a <see cref="SheetWriterMonad"/> for this sheet writer.
+        /// Creates a <see cref="SheetWriterSetup"/> for this sheet writer.
         /// </summary>
         /// <returns></returns>
-        public SheetWriterMonad AsMonad()
+        public SheetWriterSetup SetUp()
         {
-            return new SheetWriterMonad(this);
+            return new SheetWriterSetup(this);
         }
 
         /// <summary>
-        /// Sets up <see cref="Write(object[])"/> and <see cref="WriteLine(object[])"/> to apply all <paramref name="modifiers"/>
-        /// to the cells being written to. Executes <paramref name="action"/>. The modifiers are applied for this call only.
-        /// Subsequent calls will not have nay of the previous modifiers.
+        /// Executes <paramref name="action"/> and applies only <paramref name="tempSettings"/> to all <see cref="Write(object[])"/>/<see cref="WriteLine(object[])"/> calls in <paramref name="action"/>.
+        /// This settings overide any existing settings of this SheetWriter.
         /// </summary>
-        /// <param name="modifiers"></param>
+        /// <param name="tempSettings"></param>
         /// <param name="action"></param>
-        public void With(IEnumerable<Action<ExcelRange>> modifiers, Action<ISheetWriter> action)
+        public ISheetWriter WithTempSettings(ISettings tempSettings, Action<ISheetWriter> action)
         {
-            CurrentModifiers = modifiers;
+            var preservedSetting = Settings;
+            Settings = tempSettings;
             action(this);
-            CurrentModifiers = new List<Action<ExcelRange>>();
+            Settings = preservedSetting;
+            return this;
+        }
+
+        /// <summary>
+        /// Executes <paramref name="action"/> and applies both <paramref name="addedSettings"/> and any preexisting <see cref="Settings"/> to all  <see cref="Write(object[])"/>/<see cref="WriteLine(object[])"/>  calls in <paramref name="action"/>.
+        /// <paramref name="addedSettings"/> are merged with preexisting <see cref="Settings"/>.
+        /// </summary>
+        /// <param name="addedSettings"></param>
+        /// <param name="action"></param>
+        public ISheetWriter WithAddedSettings(ISettings addedSettings, Action<ISheetWriter> action)
+        {
+            var preservedSetting = Settings;
+            Settings = Settings.With(addedSettings);
+            action(this);
+            _currentSettings = preservedSetting;
+            return this;
         }
 
         /// <summary>
         /// Writes each of the objects in a separate cell in the same row. 
-        /// If called with no parametars, it will write a null value to the cell and move the pointer to the next one, 
-        /// such cells will be formated if <see cref="ApplyModifiersToEmptyCells"/> is set to true.
+        /// If called with no parametars, it will write a null value to the cell and move the pointer to the next one. 
+        /// Settings will be applied to such (empty) cells if <see cref="ApplyModifiersToEmptyCells"/> is set to true.
         /// </summary>
         /// <param name="values"></param>
-        public void Write(params object[] values)
+        public ISheetWriter Write(params object[] values)
         {
             if (AllowMultipleWriterHanldes)
             {
@@ -100,10 +116,10 @@ namespace CellWriter.EPPlusHelpers.Excell
             }
 
             //Empty cell
-            if (values == null || values.Length == 0)
+            if (values.Empty())
             {
                 WriteCellFormated("EMP",ApplyModifiersToEmptyCells);//TODO remove this
-                return;
+                return this; 
             }
 
             //Non empty cell
@@ -111,21 +127,23 @@ namespace CellWriter.EPPlusHelpers.Excell
             {
                 WriteCellFormated(value,true);
             }
+
+            return this;
         }
 
         /// <summary>
         /// Writes all the objects in a separate cell and moves the pointer to the next row.
         /// </summary>
         /// <param name="values"></param>
-        public void WriteLine(params object[] values)
+        public ISheetWriter WriteLine(params object[] values)
         {
-            if (values.Empty())
+            if (values.Any())
             {
-                UpdatePointers();
+                Write(values); //this automatically updates pointers
             }
             else
             {
-                Write(values); //this automatically updates pointers
+                UpdatePointers();
             }
 
             if (ShouldPadRows)
@@ -142,6 +160,8 @@ namespace CellWriter.EPPlusHelpers.Excell
                 WriteCellFormated(null, false);
                 Column--;
             }
+
+            return this;
         }
         
         #endregion
@@ -152,10 +172,7 @@ namespace CellWriter.EPPlusHelpers.Excell
 
             if (useModifiers)
             {
-                foreach (var modifier in CurrentModifiers)
-                {
-                    modifier(cell);
-                }
+                Settings.ApplyTo(cell);
             }
 
             cell.Value = value;

@@ -1,4 +1,6 @@
-﻿using OfficeOpenXml;
+﻿using CellWriter.EPPlusHelpers.Excell;
+using CellWriters.Core;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,23 +10,23 @@ using System.Threading.Tasks;
 
 namespace CellWriters.Exstensions
 {
-    public class Modifiers
+    public  class SettingsExstensions
     {
-        public static Action<ExcelRange> BgColor(Color color)
+        public static ISettings BgColor(Color color)
         {
-            return cell =>
+            return new Settings( cell =>
             {
                 cell.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                 cell.Style.Fill.BackgroundColor.SetColor(color);
-            };
+            });
         }
 
-        public static Action<ExcelRange> FontSize(float size)
+        public static ISettings FontSize(float size)
         {
-            return cell =>
+            return new Settings(cell =>
             {
                 cell.Style.Font.Size = size;
-            };
+            });
         }
     }
 }

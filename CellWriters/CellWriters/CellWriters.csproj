@@ -45,12 +45,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ISheetWriter.cs" />
-    <Compile Include="ObjectArrayExstensions.cs" />
+    <Compile Include="Core\ISettings.cs" />
+    <Compile Include="Core\ISheetWriter.cs" />
+    <Compile Include="Core\SheetWriterSetup.cs" />
+    <Compile Include="Exstensions\EnumerableExstensions.cs" />
+    <Compile Include="Exstensions\Modifiers.cs" />
+    <Compile Include="Exstensions\ObjectArrayExstensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SheetWriter.cs" />
-    <Compile Include="SheetWriterExstensions.cs" />
-    <Compile Include="SheetWriterMonad.cs" />
+    <Compile Include="Core\SheetWriter.cs" />
+    <Compile Include="Exstensions\SheetWriterExstensions.cs" />
+    <Compile Include="Core\Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

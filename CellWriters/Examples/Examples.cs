@@ -1,5 +1,9 @@
 ﻿using CellWriter.EPPlusHelpers.Excell;
+using CellWriters.Exstensions;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
@@ -7,79 +11,41 @@ namespace Examples
 {
     class Examples
     {
-        static void ISheetWriterExamples(string[] args)
+        static void Main(string[] args)
         {
-            using (var pck = new ExcelPackage(new FileInfo("D:\\ExampleExcellFile.xlsx")))
+            using (var pckg = new ExcelPackage(new FileInfo("D:\\ExampleFile.xlsx")))
             {
-                var sheet = new SheetWriter(pck.Workbook.Worksheets.Add("NewSheet"));
-                
-                sheet.Write("Cell1");        
-                sheet.Write("Cell2"); 
-                sheet.Write("Cell3", "Cell4");
-                //  Will result with
-                //     |  A  |  B  |  C  |  D  |
-                //  |1||Cell1|Cell2|Cell3|Cell4|
+                var redBackground = SettingsExstensions.BgColor(Color.Red);
+                var bigFont = SettingsExstensions.FontSize(37);
+                var sheetWriter = new SheetWriter(pckg.Workbook.Worksheets.Add("Examples"));
 
-                sheet.Write("Cell1", "Cell2", "Cell3", "Cell4");
-                //  Will result with
-                //     |  A  |  B  |  C  |  D  |
-                //  |1||Cell1|Cell2|Cell3|Cell4|
+                sheetWriter.SetUp()
+                           .With(redBackground);
+                           
+                sheetWriter.WriteLine("with","red", "background")
+                           .WithTempSettings(bigFont, x =>
+                           {
+                               x.WriteLine("with", "big", "font");
+                           })
+                           .WithAddedSettings(bigFont, x =>
+                           {
+                               x.WriteLine("red", "big", "font");
+                           });
 
-                sheet.Write();
-                sheet.Write("Cell2", "Cell3", "Cell4");
-                //  Will result with
-                //     |  A  |  B  |  C  |  D  |
-                //  |1||     |Cell2|Cell3|Cell4|
+                sheetWriter.SetUp().Clear();
+                sheetWriter.WriteLine("default", "formating");
 
+                var combinedSettings = redBackground.With(bigFont);
+                sheetWriter.SetUp()
+                           .With(combinedSettings);
+                sheetWriter.WriteLine("another", "big", "red", "text");
 
-                sheet.Write("Cell1", "Cell2");
-                sheet.WriteLine();
-                sheet.Write("Cell1", "Cell2");
-                //  Will result with
-                //     |  A  |  B  |
-                //  |1||Cell1|Cell2|      
-                //  |1||Cell1|Cell2|      
+                sheetWriter.SetUp().Clear()
+                           .With(redBackground)
+                           .With(bigFont);
+                sheetWriter.WriteLine("big/red", "combined", "again");
 
-                sheet.WriteLine("Cell1", "Cell2");
-                sheet.Write("Cell1", "Cell2");
-                //  Will result with
-                //     |  A  |  B  |
-                //  |1||Cell1|Cell2|      
-                //  |1||Cell1|Cell2|      
-
-
-
-                sheet.WriteLine("Cell1", "Cell2");
-                sheet.WriteLine();
-                sheet.WriteLine();
-                sheet.WriteLine("Cell1", "Cell2");
-                //  Will result with
-                //     |  A  |  B  |
-                //  |1||Cell1|Cell2|      
-                //  |2||     |     | 
-                //  |3||     |     |  
-                //  |4||Cell1|Cell2|  
-
-
-
-                sheet.WithColor(Color.Red, x =>
-                 {  
-                     //x==sheet;
-                     x.WriteLine("red", "red");
-                     x.WriteLine("red");
-                     x.Write();
-                     x.Write("red");
-                 });
-                //  Will result with
-                //     | A | B |
-                //  |1||red|red|      
-                //  |2||red|   | 
-                //  |3||   |red|
-                //All
-                
-
-
-
+                pckg.Save();
             }
         }
     }

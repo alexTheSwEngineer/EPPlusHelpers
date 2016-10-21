@@ -1,12 +1,17 @@
 # EPPlusHelpers
 A small library that abstracts writing to excel sheets in a stream like manner.
 
+#Usage:
+
 #SheetWriter examples:
 
 Instantiating:
 By default when a SheetWriter is instantiated the internal row/column pointers point to the end of the document.
+If the need exists of multiple SheetWriters to simultaneously write to the same ExcelSheet, then the AllowMultipleWriterHanldes
+must be set to true in each of the SheetWriters. Not doing so would result in errors. On the other hand, setting AllowMultipleWriterHanldes
+to true when only one SheetWriter accesses the Worksheet will function correctly but will have a unneeded performance overhead. 
 ```
-var sheet = new SheetWriter(pck.Workbook.Worksheets.Add("NewSheet"));
+var sheet = new SheetWriter(pck.Workbook.Worksheets.Add("NewSheet"),AllowMultipleWriterHanldes:true);
 ```
 
 #Using write()/writeLine():
@@ -85,7 +90,6 @@ Extension methods are usefull for common modifiers. A couple of such exstension 
     
 
     sheet.WriteLine("none","none","none");
-	//sheet.W
 	sheet.WithColor(Color.Red, x =>
 	 {  
 		 //x==sheet;
