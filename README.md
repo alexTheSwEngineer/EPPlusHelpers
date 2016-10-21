@@ -5,27 +5,29 @@ managing formating and other cell settings.
 #Usage:
 ```c#
 using (var pckg = new ExcelPackage(new FileInfo("D:\\ExampleFile.xlsx")))
-            {
-                var sheetWriter = new SheetWriter(pckg.Workbook.Worksheets.Add("Examples"));
-                sheetWriter.SetUp()
-                           .With(redBackground);
-						   .With(bigFont);
-                           
-                sheetWriter.WriteLine("with","red", "background")
-                           .WithOverrideSettings(tempSetting1, x =>
-                           {
-                               x.WriteLine("with", "big", "font");
-                           })
-                           .WithAddedSettings(tempSetting2, x =>
-                           {
-                               x.WriteLine("red", "big", "font");
-                           })
-						   .WithColor(Color.Blue,x=>
-						   {
-							  x.Write("cell1")
-							  x.Write()//empty cell
-							  x.WriteLine() //go to next row
-						   });
+{
+	var sheetWriter = new SheetWriter(pckg.Workbook.Worksheets.Add("Examples"));
+	sheetWriter.SetUp()
+			   .With(redBackground);
+			   .With(bigFont);
+			   
+	sheetWriter.WriteLine("with","red", "background")
+			   .WithOverrideSettings(tempSetting1, x =>
+			   {
+				   x.WriteLine("with", "big", "font");
+			   })
+			   .WithAddedSettings(tempSetting2, x =>
+			   {
+				   x.WriteLine("red", "big", "font");
+			   })
+			   .WithColor(Color.Blue,x=>
+			   {
+				  x.Write("cell1")
+				  x.Write()//empty cell
+				  x.WriteLine() //go to next row
+			   });
+    pckg.Save();
+}
 ```
 Setting up a sheet writers default style is done through the SetUp()/ISettings api. 
 Often there is need for some temporary change of the initial settings like in the case of creating table headers. This is most easilly done
